@@ -20,20 +20,24 @@ DROP TABLE playerproperty CASCADE CONSTRAINTS;
 -- Create the tables for invertory
 -- ----------------------------------------------------------------
 CREATE TABLE player(
-playerName	CHAR(15),
+playerName	CHAR(20),
 qp		INTEGER 	NOT NULL,
-maxWeight	INTEGER 	NOT NULL,
-class		CHAR(15)	NOT NULL,
+maxWeight	FLOAT		NOT NULL,
+class		CHAR(20)	NOT NULL,
 --
 -- playerIC1:
 -- playerName is the primary key.
 CONSTRAINT playerIC1 PRIMARY KEY (playerName),
 -- playerIC2:
 -- A player must be able to hold some amount of weight.
-CONSTRAINT playerIC2 CHECK (maxWeight > 0),
+-- and qp(QuestPoint) cannot be negative, you either have 0, or more.
+CONSTRAINT playerIC2 CHECK (maxWeight > 0 AND qp >= 0),
 -- playerIC3:
--- qp(QuestPoint) cannot be negative, you either have 0, or more.
-CONSTRAINT playerIC3 CHECK (qp >= 0)
+-- Player can only be one of following classes.
+CONSTRAINT playerIC3 CHECK (class in ('Barbarian', 'Bard', 'Cleric', 
+				      'Druid', 'Fighter',  
+				      'Paladin', 'Ranger', 'Rogue', 
+				      'Sorcerer', 'Wizard'))
 );
 -- ----------------------------------------------------------------
 CREATE TABLE inventory(
@@ -62,9 +66,9 @@ CONSTRAINT pIC2 CHECK (numRoom > 0)
 CREATE TABLE weapon(
 wid		INTEGER,
 wName		CHAR(15)	NOT NULL,
-damage		INTEGER		NOT NULL,
+damage		CHAR(15)	NOT NULL,
 wType		CHAR(15)	NOT NULL,
-wWeight		INTEGER		NOT NULL,
+wWeight		FLOAT		NOT NULL,
 playerName	CHAR(15) 	NOT NULL,
 inventoryName	CHAR(15)	NOT NULL,
 --
@@ -91,7 +95,7 @@ armorName	CHAR(15)	NOT NULL,
 AC		INTEGER		NOT NULL,
 aType		CHAR(15)	NOT NULL,
 aCheck		INTEGER		NOT NULL,
-aWeight		INTEGER		NOT NULL,
+aWeight		FLOAT		NOT NULL,
 playerName      CHAR(15)        NOT NULL,
 inventoryName   CHAR(15)        NOT NULL,
 --
