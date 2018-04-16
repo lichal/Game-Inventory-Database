@@ -191,3 +191,38 @@ CONSTRAINT ppIC3 FOREIGN KEY (playerName) REFERENCES player(playerName)
 --
 --
 --
+-- ----------------------------------------------------------
+-- Populate the database
+-- ----------------------------------------------------------
+--
+alter session set  NLS_DATE_FORMAT = 'YYYY-MM-DD';
+--
+--gp and qp issue - 1 row 2 constraint issue
+insert into player values ('Johannes', 18000, 175.0, 'Paladin');
+insert into player values ('Lerdeth', 7000, 260.0, 'Barbarian');
+insert into player values ('Alacor', 150, 100.0, 'Wizard');
+insert into player values ('Andriel', 750, 130.0, 'Cleric');
+--
+--
+insert into inventory values ('chest', 'Johannes', 'Ship: SS Victory');
+insert into inventory values ('saddle bags', 'Johannes', 'Horse: Fury');
+insert into inventory values ('vault', 'Johannes', 'Bank of Herrod');
+insert into inventory values ('backpack', 'Johannes', 'On Person');
+insert into inventory values ('belt', 'Johannes', 'On Person');
+insert into inventory values ('backpack', 'Lerdeth', 'On Person');
+insert into inventory values ('backpack', 'Alacor', 'On Person');
+insert into inventory values ('backpack', 'Andriel', 'On Person');
+--
+--
+insert into property values ('house1', '123 Straight St, Herrod', 5);
+insert into property values ('house2', 'Ft Zombiehead, Apt 3, Dead Isle', 3);
+insert into property values ('ship', 'SS Victory', 4);
+insert into property values ('castle_north', 'Vaterland Capitol', 25);
+--
+--here is where we could had 2 constraint, name contains 'sword', damage must contain slashing
+--damage is said to be greater than 0, but that is not possible with string
+--remember float for weight
+--how to insert multivalue?
+insert into weapon values (01, 'Longsword, Blessed', '1d8+1', 'Slashing', 4.0, 'Johannes', 'belt');
+insert into weapon values (02, 'Dagger', '1d4', 'Slashing' or 'Piercing', 1.0, 'Johannes', 'belt');
+--insert into weapon values ( , '', '', '', , '', '');
