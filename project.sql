@@ -246,12 +246,20 @@ SELECT * FROM playerproperty;
 --
 -- < START OF QUERIES >
 -- < Q01 - A join involving at least four relations. >
--- EXPLAIN
--- SELECT P.playerName, P.class, I.inventory, COUNT(DT.)
--- FROM player P, Inventory I, damagetype D
--- WHERE 
+-- Find the player name and the player class having an inventory that contains a weapon that has damage type 'piercing'.
+SELECT 	P.playerName, P.class, I.inventory, W.wName
+FROM 	player P, Inventory I, damagetype D, weapon W
+WHERE 	p.playerName = I.iPlayer AND
+	I.iPlayer = W.playerName AND
+	I.inventoryName = W.inventoryName AND
+	W.wid = D.wid AND
+	D.damageType = "Piercing";
 -- < Q02 - A self-join >
--- EXPLAIN
+-- Find the pair of players having the same type of inventory. 
+SELECT 	DISTINCT I1.iPlayer, I2.iPlayer, I1.inventoryName
+FROM 	inventory I1, inventory I2
+WHERE	I1.inventoryName = I2.inventoryName AND
+	I1.iPlayer != I2.iPlayer;
 -- < Q03 - UNION, INTERSECT, and/or MINUS. >
 -- Find the sid and spell name of every spell whose casterLevel is above 2
 -- or contain a type of potion.
