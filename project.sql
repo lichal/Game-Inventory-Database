@@ -198,9 +198,14 @@ insert into inventory values ('saddle bags', 'Johannes', 'Horse: Fury');
 insert into inventory values ('vault', 'Johannes', 'Bank of Herrod');
 insert into inventory values ('backpack', 'Johannes', 'On Person');
 insert into inventory values ('belt', 'Johannes', 'On Person');
+insert into inventory values ('equipped', 'Johannes', 'On Person');
 insert into inventory values ('backpack', 'Lerdeth', 'On Person');
+insert into inventory values ('belt', 'Lerdeth', 'On Person');
+insert into inventory values ('saddle bags', 'Lerdeth', 'Horse: brown');
 insert into inventory values ('backpack', 'Alacor', 'On Person');
+insert into inventory values ('equipped', 'Alacor', 'On Person');
 insert into inventory values ('backpack', 'Andriel', 'On Person');
+insert into inventory values ('equipped', 'Andriel', 'On Person');
 --
 --
 insert into property values ('house1', '123 Straight St, Herrod', 5);
@@ -218,6 +223,8 @@ insert into weapon values (04, 'Lance', '1d8', '2-handed', 10.0, 'Lerdeth', 'sad
 insert into weapon values (05, 'Greatsword', '2d6', '2-handed', 8.0, 'Lerdeth', 'belt');
 insert into weapon values (06, 'Dagger', '1d4', 'light', 1.0, 'Lerdeth', 'belt');
 insert into weapon values (07, 'Javelin', '1d6', 'light', 2.0, 'Lerdeth', 'backpack');
+insert into weapon values (08, 'Mace, Hvy', '1d8', '1-handed', 2.0, 'Andriel', 'equipped');
+insert into weapon values (09, 'Club', '1d6', '1-handed', 2.0, 'Lerdeth', 'belt');
 --
 --
 insert into armor values (11, 'Full Plate +3', 11, 'heavy', 5, 50.0, 'Johannes', 'equipped');
@@ -252,6 +259,8 @@ insert into damagetype values (06, 'piercing');
 insert into damagetype values (03, 'piercing');
 insert into damagetype values (04, 'piercing');
 insert into damagetype values (07, 'piercing');
+insert into damagetype values (08, 'bludgeoning');
+insert into damagetype values (09, 'bludgeoning');
 --
 --
 insert into playerproperty values ('house1', 'Andriel', '1184-05-12');
