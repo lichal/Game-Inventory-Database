@@ -85,7 +85,7 @@ CONSTRAINT wIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inv
 -- ----------------------------------------------------------------
 CREATE TABLE armor(
 aid		INTEGER,
-armorName	CHAR(15)	NOT NULL,
+armorName	CHAR(25)	NOT NULL,
 AC		INTEGER		NOT NULL,
 aType		CHAR(15)	NOT NULL,
 aCheck		INTEGER		NOT NULL,
@@ -107,7 +107,7 @@ CONSTRAINT aIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inv
 CONSTRAINT aIC4 CHECK (AC >= 0),
 -- aIC5:
 -- If armor is 'heavy', check must be greater than 1.
-CONSTRAINT aIC5 CHECK (aType = 'heavy' AND aCheck > 1)
+CONSTRAINT aIC5 CHECK ((aType = 'heavy' AND aCheck > 1) OR (aType != 'heavy'))
 );
 -- ----------------------------------------------------------------
 CREATE TABLE spell(
@@ -130,7 +130,7 @@ CONSTRAINT spIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(in
 -- ----------------------------------------------------------------
 CREATE TABLE potion(
 pid		INTEGER,
-potionName	CHAR(15)	NOT NULL,
+potionName	CHAR(25)	NOT NULL,
 sid		INTEGER		NOT NULL,
 playerName      CHAR(15)        NOT NULL,
 inventoryName   CHAR(15)        NOT NULL,
