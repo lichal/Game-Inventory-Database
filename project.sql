@@ -255,11 +255,11 @@ WHERE 	p.playerName = I.iPlayer AND
 	W.wid = D.wid AND
 	D.damageType = "Piercing";
 -- < Q02 - A self-join >
--- Find the pair of players having the same type of inventory. 
-SELECT 	DISTINCT I1.iPlayer, I2.iPlayer, I1.inventoryName
+-- Find the pair of players having at least one of the same inventory. 
+SELECT 	I1.iPlayer, I2.iPlayer
 FROM 	inventory I1, inventory I2
 WHERE	I1.inventoryName = I2.inventoryName AND
-	I1.iPlayer != I2.iPlayer;
+	I1.iPlayer < I2.iPlayer;
 -- < Q03 - UNION, INTERSECT, and/or MINUS. >
 -- Find the sid and spell name of every spell whose casterLevel is above 2
 -- or contain a type of potion.
