@@ -281,7 +281,7 @@ WHERE 	p.playerName = I.iPlayer AND
 	I.iPlayer = W.playerName AND
 	I.inventoryName = W.inventoryName AND
 	W.wid = D.wid AND
-	D.damageType = "Piercing";
+	D.damageType = "piercing";
 -- < Q02 - A self-join >
 -- Find the pair of players having at least one of the same inventory. 
 SELECT 	I1.iPlayer, I2.iPlayer
