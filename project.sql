@@ -244,7 +244,60 @@ SELECT * FROM damagetype;
 -- Print player property table.
 SELECT * FROM playerproperty;
 --
---<PUT QUERIES STARTING THIS LINE>
+-- < START OF QUERIES >
+-- < Q01 - A join involving at least four relations. >
+-- EXPLAIN
+-- SELECT P.playerName, P.class, I.inventory, COUNT(DT.)
+-- FROM player P, Inventory I, damagetype D
+-- WHERE 
+-- < Q02 - A self-join >
+-- EXPLAIN
+-- < Q03 - UNION, INTERSECT, and/or MINUS. >
+-- Find the sid and spell name of every spell whose casterLevel is above 2
+-- or contain a type of potion.
+SELECT	S.sid, S.spellName
+FROM 	spell S
+WHERE 	s.casterLevel > 2
+UNION
+SELECT 	S.sid, S.spellName
+FROM 	spell S, potion P
+WHERE	s.sid = P.pid;
+-- < Q04 - SUM, AVG, MAX, and/or MIN. >
+-- Find the total weight, highest weight, and average weight of weapon in each inventory.
+SELECT	I.iPlayer, I.inventoryName, SUM(W.wWeight), MAX(W.wWeight), AVG(W.wWeight)
+FROM 	weapon W, inventory I
+WHERE	I.iPlayer = W.playerName AND
+	I.inventoryName = W.playerName
+GROUP BY I.iPlayer, I.inventoryName;
+-- < Q05 - GROUP BY, HAVING, and ORDER BY, all appearing in the same query. >
+-- Find the player holding having an inventory that has more than 2 armor in the inventory,
+-- also find the total weight of armor is the inventory holding and sort it by total weight.
+SELECT  I.iPlayer, I.inventoryName, SUM(A.aWeight), COUNT(*)
+FROM    armor A, inventory I
+WHERE   I.iPlayer = A.playerName AND
+        I.inventoryName = A.inventoryName
+GROUP BY I.iPlayer, I.inventoryName
+HAVING 	COUNT(*) > 2
+ORDER BY SUM(A.aWeight);
+-- < Q06 - A correlated subquery. >
+-- EXPLAIN
+-- < Q07 - A non-correlated subquery. >
+-- EXPLAIN
+-- < Q08 - A relational DIVISION query. >
+--
+-- < Q09 - An outer join query. >
+-- EXPLAIN
+-- < Q10 - A RANK query >
+-- Finding the rank of weight 10.0 among all the weapons.
+SELECT RANK(10.0) WITHIN GROUP
+(ORDER BY wWeight) "Weapon Weight RANK FOR 10.0"
+FROM weapon;
+-- < Q11 - A Top-N query. >
+-- Finding the top five casterlevel of spell in the inventory.
+SELECT 	sid, spellName, casterLevel
+FROM	spell
+ORDER BY casterLevel DESC
+FETCH FIRST 5 ROWS ONLY;
 --
 -- Testing: <IC name>
 COMMIT;
