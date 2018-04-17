@@ -104,9 +104,10 @@ CONSTRAINT aIC2 CHECK (aWeight > 0),
 CONSTRAINT aIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer),
 -- aIC4:
 -- AC (armor class quality) must be at least 0.
-CONSTRAINT aIC4 CHECK (AC >= 0)
--- aIC4:
--- Constraint the type in the following
+CONSTRAINT aIC4 CHECK (AC >= 0),
+-- aIC5:
+-- If armor is 'heavy', check must be greater than 1.
+CONSTRAINT aIC5 CHECK (aType = "heavy" AND aCheck > 1)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE spell(
