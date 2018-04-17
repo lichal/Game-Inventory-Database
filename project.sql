@@ -62,8 +62,8 @@ CONSTRAINT pIC2 CHECK (numRoom > 0)
 -- ----------------------------------------------------------------
 CREATE TABLE weapon(
 wid		INTEGER,
-wName		CHAR(15)	NOT NULL,
-damage		CHAR(15)	NOT NULL,
+wName		CHAR(20)	NOT NULL,
+damage		CHAR(10)	NOT NULL,
 wType		CHAR(15)	NOT NULL,
 wWeight		FLOAT		NOT NULL,
 playerName	CHAR(15) 	NOT NULL,
@@ -107,12 +107,12 @@ CONSTRAINT aIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inv
 CONSTRAINT aIC4 CHECK (AC >= 0),
 -- aIC5:
 -- If armor is 'heavy', check must be greater than 1.
-CONSTRAINT aIC5 CHECK (aType = "heavy" AND aCheck > 1)
+CONSTRAINT aIC5 CHECK (aType = 'heavy' AND aCheck > 1)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE spell(
 sid		INTEGER,
-spellName	CHAR(15)	NOT NULL,
+spellName	CHAR(25)	NOT NULL,
 casterLevel	INTEGER		NOT NULL,
 playerName	CHAR(15)	NOT NULL,
 inventoryName	CHAR(15)	NOT NULL,
