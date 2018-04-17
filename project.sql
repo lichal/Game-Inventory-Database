@@ -241,6 +241,21 @@ insert into potion values (34, 'Cure Potion', 24, 'Andriel', 'backpack');
 insert into potion values (35, 'Scroll of Tentacles', 25, 'Alacor', 'backpack');
 --
 --
+insert into damagetype values (01, 'slashing or piercing');
+insert into damagetype values (02, 'slashing or piercing');
+insert into damagetype values (05, 'slashing or piercing');
+insert into damagetype values (06, 'slashing or piercing');
+insert into damagetype values (03, 'piercing');
+insert into damagetype values (04, 'piercing');
+insert into damagetype values (07, 'piercing');
+--
+--
+insert into playerproperty values ('house1', 'Andriel', '1184-05-12');
+insert into playerproperty values ('house2', 'Johannes', '1185-08-22');
+insert into playerproperty values ('ship', 'Johannes', '1185-08-22');
+insert into playerproperty values ('castle_north', 'Johannes', '1180-01-01');
+--
+--
 --insert into weapon values ( , '', '', '', , '', '');
 --
 --
