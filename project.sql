@@ -211,9 +211,36 @@ insert into property values ('castle_north', 'Vaterland Capitol', 25);
 --here is where we could had 2 constraint, name contains 'sword', damage must contain slashing
 --damage is said to be greater than 0, but that is not possible with string
 --remember float for weight
---how to insert multivalue?
---insert into weapon values (01, 'Longsword, Blessed', '1d8+1', 'Slashing', 4.0, 'Johannes', 'belt');
---insert into weapon values (02, 'Dagger', '1d4', 'Slashing' or 'Piercing', 1.0, 'Johannes', 'belt');
+insert into weapon values (01, 'Longsword, Blessed', '1d8+1', '1-handed', 4.0, 'Johannes', 'belt');
+insert into weapon values (02, 'Dagger', '1d4', 'light', 1.0, 'Johannes', 'belt');
+insert into weapon values (03, 'Lance +1', '1d8+1', '2-handed', 10.0, 'Johannes', 'saddle bags');
+insert into weapon values (04, 'Lance', '1d8', '2-handed', 10.0, 'Lerdeth', 'saddle bags');
+insert into weapon values (05, 'Greatsword', '2d6', '2-handed', 8.0, 'Lerdeth', 'belt');
+insert into weapon values (06, 'Dagger', '1d4', 'light', 1.0, 'Lerdeth', 'belt');
+insert into weapon values (07, 'Javelin', '1d6', 'light', 2.0, 'Lerdeth', 'backpack');
+--
+--
+insert into armor values (11, 'Full Plate +3', 11, 'heavy', 5, 50.0, 'Johannes', 'equipped');
+insert into armor values (12, 'Full Plate', 8, 'heavy', 6, 50.0, 'Lerdeth', 'backpack');
+insert into armor values (13, 'Robe of the Arch Magi', 2, 'light', 0, 5.5, 'Alacor', 'backpack');
+insert into armor values (14, 'Leather', 2, 'light', 0, 15.0, 'Johannes', 'chest');
+insert into armor values (15, 'Brass Chain Shirt', 5, 'light', 1, 25.0, 'Johannes', 'backpack');
+--
+--
+insert into spell values (21, 'Cure Light Wounds', 1, 'Andriel', 'backpack');
+insert into spell values (22, 'Cure Moderate Wounds', 3, 'Andriel', 'backpack');
+insert into spell values (23, 'Cure Serious Wounds', 5, 'Andriel', 'backpack');
+insert into spell values (24, 'Cure Critical Wounds', 7, 'Andriel', 'backpack');
+insert into spell values (25, 'Evards Black Tentacles', 8, 'Alacor', 'backpack');
+--
+--
+insert into potion values (31, 'Cure Potion', 21, 'Andriel', 'backpack');
+insert into potion values (32, 'Cure Potion', 22, 'Andriel', 'backpack');
+insert into potion values (33, 'Cure Potion', 23, 'Andriel', 'backpack');
+insert into potion values (34, 'Cure Potion', 24, 'Andriel', 'backpack');
+insert into potion values (35, 'Scroll of Tentacles', 25, 'Alacor', 'backpack');
+--
+--
 --insert into weapon values ( , '', '', '', , '', '');
 --
 --
