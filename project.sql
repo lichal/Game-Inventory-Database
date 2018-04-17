@@ -335,13 +335,34 @@ GROUP BY I.iPlayer, I.inventoryName
 HAVING 	COUNT(*) > 2
 ORDER BY SUM(A.aWeight);
 -- < Q06 - A correlated subquery. >
--- EXPLAIN
+-- -- Find the name of every weapon that has a damageType
+SELECT W.wName
+FROM weapon W
+WHERE W.wid =
+	(SELECT D.wid
+	 FROM damagetype D
+	 WHERE D.wid = W.wid);
 -- < Q07 - A non-correlated subquery. >
--- EXPLAIN
+-- Find the name of every weapon that has the damageType 'slashing'
+SELECT W.wName
+FROM weapon W
+WHERE W.wid = 
+	(SELECT D.wid
+	 FROM damagetype D
+	 WHERE D.damageType = "slashing");
 -- < Q08 - A relational DIVISION query. >
---
+-- Find the name of every inventory that is not on the player's person
+SELECT I.iPlayer, I.inventoryName
+FROM inventory I
+WHERE I.location NOT EXISTS (SELECT I2.location
+				FROM inventory I
+				WHERE I2.location = "On Person");
 -- < Q09 - An outer join query. >
--- EXPLAIN
+-- Find the class and the name of every player's inventory
+SELECT P.class, I.inventoryName
+FROM inventory I
+LEFT OUTER JOIN player P
+ON I.iPlayer = P.playerName;
 -- < Q10 - A RANK query >
 -- Finding the rank of weight 10.0 among all the weapons.
 SELECT RANK(10.0) WITHIN GROUP
