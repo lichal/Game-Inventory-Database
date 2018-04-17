@@ -79,7 +79,7 @@ CONSTRAINT wIC1 PRIMARY KEY (wid),
 -- A weapon must have a weight greater than 0.
 CONSTRAINT wIC3 CHECK (wWeight > 0.0),
 -- wIC4:
--- The weapon must actually exist in an inventory and hold by player.
+-- The weapon must be hold by a player and exist in one inventory only.
 CONSTRAINT wIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
 );
 -- ----------------------------------------------------------------
@@ -158,6 +158,7 @@ CONSTRAINT dIC2 FOREIGN KEY (wid) REFERENCES weapon(wid)
 CREATE TABLE playerproperty(
 propertyName	CHAR(15)	NOT NULL,
 playerName	CHAR(15)	NOT NULL,
+dateBought      DATE		NOT NULL,
 -- ppIC1:
 -- propertyName and playerName primary key.
 CONSTRAINT ppIC1 PRIMARY KEY (propertyName, playerName),
