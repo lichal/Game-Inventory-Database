@@ -40,16 +40,16 @@ CONSTRAINT playerIC3 CHECK (class in ('Barbarian', 'Bard', 'Cleric',
 CREATE TABLE inventory(
 inventoryName	CHAR(15),
 iPlayer		CHAR(15)	NOT NULL,
-location	CHAR(15)	NOT NULL,
+location	CHAR(50)	NOT NULL,
 --
 -- iIC1:
 -- inventoryName is the primary key.
-CONSTRAINT iIC1 PRIMARY KEY(inventoryName)
+CONSTRAINT iIC1 PRIMARY KEY(inventoryName, iPlayer)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE property(
 propertyName	CHAR(15),
-address		CHAR(25)	NOT NULL,
+address		CHAR(50)	NOT NULL,
 numRoom		INTEGER		NOT NULL,
 --
 -- pIC1:
@@ -74,16 +74,13 @@ inventoryName	CHAR(15)	NOT NULL,
 CONSTRAINT wIC1 PRIMARY KEY (wid),
 -- wIC2:
 -- A weapon can have no damage, but the damage must not be negative.
-CONSTRAINT wIC2 CHECK (damage >= 0),
+--CONSTRAINT wIC2 CHECK (damage >= 0),
 -- wIC3:
 -- A weapon must have a weight greater than 0.
-CONSTRAINT wIC3 CHECK (wWeight > 0),
+CONSTRAINT wIC3 CHECK (wWeight > 0.0),
 -- wIC4:
--- The weapon must be hold by a player.
-CONSTRAINT wIC4 FOREIGN KEY (playerName) REFERENCES player(playerName),
--- wIC5:
--- The weapon must actually exist in an inventory.
-CONSTRAINT wIC5 FOREIGN KEY (inventoryName) REFERENCES inventory(inventoryName)
+-- The weapon must actually exist in an inventory and hold by player.
+CONSTRAINT wIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE armor(
@@ -103,15 +100,12 @@ CONSTRAINT aIC1 PRIMARY KEY (aid),
 -- An armor must have a weight greater than 0.
 CONSTRAINT aIC2 CHECK (aWeight > 0),
 -- aIC3:
--- Armor must be hold by a player.
-CONSTRAINT aIC3 FOREIGN KEY (playerName) REFERENCES player(playerName),
+-- The armor must actually exist in an inventory and hold by player.
+CONSTRAINT aIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer),
 -- aIC4:
--- Armor must actually exist in an inventory.
-CONSTRAINT aIC4 FOREIGN KEY (inventoryName) REFERENCES inventory(inventoryName),
--- aIC5:
 -- AC (armor class quality) must be at least 0.
-CONSTRAINT aIC5 CHECK (AC >= 0)
--- aIC6:
+CONSTRAINT aIC4 CHECK (AC >= 0)
+-- aIC4:
 -- Constraint the type in the following
 );
 -- ----------------------------------------------------------------
@@ -129,11 +123,8 @@ CONSTRAINT spIC1 PRIMARY KEY (sid),
 -- Caster level is at least one.
 CONSTRAINT spIC2 CHECK (casterLevel >= 1),
 -- spIC3:
--- Spell must be hold by a player.
-CONSTRAINT spIC3 FOREIGN KEY (playerName) REFERENCES player(playerName),
--- spIC4:
--- Spell must actually exist in an inventory.
-CONSTRAINT spIC4 FOREIGN KEY (inventoryName) REFERENCES inventory(inventoryName)
+-- The weapon must actually exist in an inventory and hold by player.
+CONSTRAINT spIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE potion(
@@ -148,12 +139,9 @@ CONSTRAINT poIC1 PRIMARY KEY (pid),
 -- poIC2:
 -- Potion must also be a type of spell.
 CONSTRAINT poIC2 FOREIGN KEY (sid) REFERENCES spell(sid),
--- poIC3:
--- Potion must be hold by a player.
-CONSTRAINT poIC3 FOREIGN KEY (playerName) REFERENCES player(playerName),
 -- poIC4:
--- Potion must exist in an inventory.
-CONSTRAINT poIC4 FOREIGN KEY (inventoryName) REFERENCES inventory(inventoryName)
+-- The weapon must actually exist in an inventory and hold by player.
+CONSTRAINT poIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
 );
 -- ----------------------------------------------------------------
 CREATE TABLE damagetype(
@@ -222,8 +210,8 @@ insert into property values ('castle_north', 'Vaterland Capitol', 25);
 --damage is said to be greater than 0, but that is not possible with string
 --remember float for weight
 --how to insert multivalue?
-insert into weapon values (01, 'Longsword, Blessed', '1d8+1', 'Slashing', 4.0, 'Johannes', 'belt');
-insert into weapon values (02, 'Dagger', '1d4', 'Slashing' or 'Piercing', 1.0, 'Johannes', 'belt');
+--insert into weapon values (01, 'Longsword, Blessed', '1d8+1', 'Slashing', 4.0, 'Johannes', 'belt');
+--insert into weapon values (02, 'Dagger', '1d4', 'Slashing' or 'Piercing', 1.0, 'Johannes', 'belt');
 --insert into weapon values ( , '', '', '', , '', '');
 --
 --
