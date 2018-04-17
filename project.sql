@@ -241,10 +241,14 @@ insert into potion values (34, 'Cure Potion', 24, 'Andriel', 'backpack');
 insert into potion values (35, 'Scroll of Tentacles', 25, 'Alacor', 'backpack');
 --
 --
-insert into damagetype values (01, 'slashing or piercing');
-insert into damagetype values (02, 'slashing or piercing');
-insert into damagetype values (05, 'slashing or piercing');
-insert into damagetype values (06, 'slashing or piercing');
+insert into damagetype values (01, 'slashing');
+insert into damagetype values (01, 'piercing');
+insert into damagetype values (02, 'slashing');
+insert into damagetype values (02, 'piercing');
+insert into damagetype values (05, 'slashing');
+insert into damagetype values (05, 'piercing');
+insert into damagetype values (06, 'slashing');
+insert into damagetype values (06, 'piercing');
 insert into damagetype values (03, 'piercing');
 insert into damagetype values (04, 'piercing');
 insert into damagetype values (07, 'piercing');
