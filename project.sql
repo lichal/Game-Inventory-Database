@@ -1,11 +1,8 @@
 SPOOL project.out
 SET ECHO ON
 /*
-Project: Inventory Database
-Author: Li, Cheng(Coodinator)
-Author: Krueger, Cody
-Author: Helme, Cameron
-Author: Basso, Ryan
+CIS 353 - Database Design Project <Inventory Database>
+<Cheng Li, Cody Krueger, Cameron Helme, Ryan Basso>
 */
 DROP TABLE player CASCADE CONSTRAINTS;
 DROP TABLE property CASCADE CONSTRAINTS;
@@ -195,6 +192,8 @@ CONSTRAINT ppIC3 FOREIGN KEY (playerName) REFERENCES player(playerName)
 -- Populate the database
 -- ----------------------------------------------------------
 --
+SET FEEDBACK OFF
+--
 alter session set  NLS_DATE_FORMAT = 'YYYY-MM-DD';
 --
 --gp and qp issue - 1 row 2 constraint issue
@@ -226,3 +225,39 @@ insert into property values ('castle_north', 'Vaterland Capitol', 25);
 insert into weapon values (01, 'Longsword, Blessed', '1d8+1', 'Slashing', 4.0, 'Johannes', 'belt');
 insert into weapon values (02, 'Dagger', '1d4', 'Slashing' or 'Piercing', 1.0, 'Johannes', 'belt');
 --insert into weapon values ( , '', '', '', , '', '');
+--
+--
+--
+-- ----------------------------------------------------------
+--
+--
+-- ----------------------------------------------------------
+-- Queries
+-- ----------------------------------------------------------
+SET FEEDBACK ON
+COMMIT;
+-- Print Player Table
+SELECT * FROM player;
+-- Print Inventory Table
+SELECT * FROM inventory;
+-- Print Property Table
+SELECT * FROM property;
+-- Print Weapon Table
+SELECT * FROM weapon;
+-- Print Armor Table
+SELECT * FROM armor;
+-- Print Spell Table
+SELECT * FROM spell;
+-- Print Potion Table
+SELECT * FROM potion;
+-- Print damage type Table
+SELECT * FROM damagetype;
+-- Print player property table.
+SELECT * FROM playerproperty;
+--
+--<PUT QUERIES STARTING THIS LINE>
+--
+-- Testing: <IC name>
+COMMIT;
+--
+SPOOL OFF
