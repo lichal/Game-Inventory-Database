@@ -1,0 +1,788 @@
+SQL> /*
+SQL> CIS 353 - Database Design Project <Inventory Database>
+SQL> <Cheng Li, Cody Krueger, Cameron Helme, Ryan Basso>
+SQL> */
+SQL> DROP TABLE player CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE property CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE weapon CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE armor CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE potion CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE spell CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE inventory CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE damagetype CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> DROP TABLE playerproperty CASCADE CONSTRAINTS;
+
+Table dropped.
+
+SQL> --
+SQL> -- Create the tables for invertory
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE player(
+  2  playerName      CHAR(15),
+  3  gp 	     INTEGER	     NOT NULL,
+  4  maxWeight	     FLOAT	     NOT NULL,
+  5  class	     CHAR(20)	     NOT NULL,
+  6  --
+  7  -- playerIC1:
+  8  -- playerName is the primary key.
+  9  CONSTRAINT playerIC1 PRIMARY KEY (playerName),
+ 10  -- playerIC2:
+ 11  -- A player must be able to hold some amount of weight.
+ 12  -- and gp(gold pieces) cannot be negative, you either have 0, or more.
+ 13  CONSTRAINT playerIC2 CHECK (maxWeight > 0 AND gp >= 0),
+ 14  -- playerIC3:
+ 15  -- Player can only be one of following classes.
+ 16  CONSTRAINT playerIC3 CHECK (class in ('Barbarian', 'Bard', 'Cleric',
+ 17  					   'Druid', 'Fighter',
+ 18  					   'Paladin', 'Ranger', 'Rogue',
+ 19  					   'Sorcerer', 'Wizard'))
+ 20  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE inventory(
+  2  inventoryName   CHAR(15),
+  3  iPlayer	     CHAR(15)	     NOT NULL,
+  4  location	     CHAR(20)	     NOT NULL,
+  5  --
+  6  -- iIC1:
+  7  -- inventoryName is the primary key.
+  8  CONSTRAINT iIC1 PRIMARY KEY(inventoryName, iPlayer)
+  9  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE property(
+  2  propertyName    CHAR(15),
+  3  address	     CHAR(35)	     NOT NULL,
+  4  numRoom	     INTEGER	     NOT NULL,
+  5  --
+  6  -- pIC1:
+  7  -- propertyName is the primary key.
+  8  CONSTRAINT pIC1 PRIMARY KEY (propertyName),
+  9  -- pIC2:
+ 10  -- A property must has at least one room.
+ 11  CONSTRAINT pIC2 CHECK (numRoom > 0)
+ 12  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE weapon(
+  2  wid	     INTEGER,
+  3  wName	     CHAR(20)	     NOT NULL,
+  4  damage	     CHAR(10)	     NOT NULL,
+  5  wType	     CHAR(15)	     NOT NULL,
+  6  wWeight	     FLOAT	     NOT NULL,
+  7  playerName      CHAR(15)	     NOT NULL,
+  8  inventoryName   CHAR(15)	     NOT NULL,
+  9  --
+ 10  -- wIC1:
+ 11  -- wid is the primary key.
+ 12  CONSTRAINT wIC1 PRIMARY KEY (wid),
+ 13  -- wIC2:
+ 14  -- A weapon must be classified as light, 1-handed, or 2-handed.
+ 15  CONSTRAINT wIC2 CHECK (wType in ('light', '1-handed', '2-handed')),
+ 16  -- wIC3:
+ 17  -- A weapon must have a weight greater than 0.
+ 18  CONSTRAINT wIC3 CHECK (wWeight > 0.0),
+ 19  -- wIC4:
+ 20  -- The weapon must be hold by a player and exist in one inventory only.
+ 21  CONSTRAINT wIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
+ 22  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE armor(
+  2  aid	     INTEGER,
+  3  armorName	     CHAR(25)	     NOT NULL,
+  4  AC 	     INTEGER	     NOT NULL,
+  5  aType	     CHAR(15)	     NOT NULL,
+  6  aCheck	     INTEGER	     NOT NULL,
+  7  aWeight	     FLOAT	     NOT NULL,
+  8  playerName      CHAR(15)	     NOT NULL,
+  9  inventoryName   CHAR(15)	     NOT NULL,
+ 10  --
+ 11  -- aIC1:
+ 12  -- aid is the primary key.
+ 13  CONSTRAINT aIC1 PRIMARY KEY (aid),
+ 14  -- aIC2:
+ 15  -- An armor must have a weight greater than 0.
+ 16  CONSTRAINT aIC2 CHECK (aWeight > 0),
+ 17  -- aIC3:
+ 18  -- The armor must actually exist in an inventory and hold by player.
+ 19  CONSTRAINT aIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer),
+ 20  -- aIC4:
+ 21  -- AC (armor class quality) must be at least 0.
+ 22  CONSTRAINT aIC4 CHECK (AC >= 0),
+ 23  -- aIC5:
+ 24  -- If armor is 'heavy', check must be greater than 1.
+ 25  CONSTRAINT aIC5 CHECK ((aType = 'heavy' AND aCheck > 1) OR (aType != 'heavy'))
+ 26  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE spell(
+  2  sid	     INTEGER,
+  3  spellName	     CHAR(25)	     NOT NULL,
+  4  casterLevel     INTEGER	     NOT NULL,
+  5  playerName      CHAR(15)	     NOT NULL,
+  6  inventoryName   CHAR(15)	     NOT NULL,
+  7  --
+  8  -- spIC1:
+  9  -- sid is the primary key.
+ 10  CONSTRAINT spIC1 PRIMARY KEY (sid),
+ 11  -- spIC2:
+ 12  -- Caster level is at least one.
+ 13  CONSTRAINT spIC2 CHECK (casterLevel >= 1),
+ 14  -- spIC3:
+ 15  -- The weapon must actually exist in an inventory and hold by player.
+ 16  CONSTRAINT spIC3 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
+ 17  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE potion(
+  2  pid	     INTEGER,
+  3  potionName      CHAR(25)	     NOT NULL,
+  4  sid	     INTEGER	     NOT NULL,
+  5  playerName      CHAR(15)	     NOT NULL,
+  6  inventoryName   CHAR(15)	     NOT NULL,
+  7  -- poIC1:
+  8  -- pid is the primary key
+  9  CONSTRAINT poIC1 PRIMARY KEY (pid),
+ 10  -- poIC2:
+ 11  -- Potion must also be a type of spell.
+ 12  CONSTRAINT poIC2 FOREIGN KEY (sid) REFERENCES spell(sid),
+ 13  -- poIC4:
+ 14  -- The weapon must actually exist in an inventory and hold by player.
+ 15  CONSTRAINT poIC4 FOREIGN KEY (inventoryName, playerName) REFERENCES inventory(inventoryName, iPlayer)
+ 16  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE damagetype(
+  2  wid	     INTEGER	     NOT NULL,
+  3  damageType      CHAR(15)	     NOT NULL,
+  4  -- dIC1:
+  5  -- wid and damageType are the primary key.
+  6  CONSTRAINT dIC1 PRIMARY KEY (wid, damageType),
+  7  -- dIC2:
+  8  -- a weapon must actually exist.
+  9  CONSTRAINT dIC2 FOREIGN KEY (wid) REFERENCES weapon(wid)
+ 10  );
+
+Table created.
+
+SQL> -- ----------------------------------------------------------------
+SQL> CREATE TABLE playerproperty(
+  2  propertyName    CHAR(15)	     NOT NULL,
+  3  playerName      CHAR(15)	     NOT NULL,
+  4  dateBought      DATE	     NOT NULL,
+  5  -- ppIC1:
+  6  -- propertyName and playerName primary key.
+  7  CONSTRAINT ppIC1 PRIMARY KEY (propertyName, playerName),
+  8  -- ppIC2:
+  9  -- A property must actually exist.
+ 10  CONSTRAINT ppIC2 FOREIGN KEY (propertyName) REFERENCES property(propertyName),
+ 11  -- ppIC3:
+ 12  -- A Player must actually exist.
+ 13  CONSTRAINT ppIC3 FOREIGN KEY (playerName) REFERENCES player(playerName)
+ 14  );
+
+Table created.
+
+SQL> --
+SQL> --
+SQL> -- ----------------------------------------------------------
+SQL> -- Populate the database
+SQL> -- ----------------------------------------------------------
+SQL> --
+SQL> SET FEEDBACK OFF
+SQL> --
+SQL> alter session set	NLS_DATE_FORMAT = 'YYYY-MM-DD';
+SQL> --
+SQL> --
+SQL> insert into player values ('Johannes', 18000, 175.0, 'Paladin');
+SQL> insert into player values ('Lerdeth', 7000, 260.0, 'Barbarian');
+SQL> insert into player values ('Alacor', 150, 100.0, 'Wizard');
+SQL> insert into player values ('Andriel', 750, 130.0, 'Cleric');
+SQL> --
+SQL> --
+SQL> insert into inventory values ('chest', 'Johannes', 'Ship: SS Victory');
+SQL> insert into inventory values ('saddle bags', 'Johannes', 'Horse: Fury');
+SQL> insert into inventory values ('vault', 'Johannes', 'Bank of Herrod');
+SQL> insert into inventory values ('backpack', 'Johannes', 'On Person');
+SQL> insert into inventory values ('belt', 'Johannes', 'On Person');
+SQL> insert into inventory values ('equipped', 'Johannes', 'On Person');
+SQL> insert into inventory values ('backpack', 'Lerdeth', 'On Person');
+SQL> insert into inventory values ('belt', 'Lerdeth', 'On Person');
+SQL> insert into inventory values ('saddle bags', 'Lerdeth', 'Horse: brown');
+SQL> insert into inventory values ('backpack', 'Alacor', 'On Person');
+SQL> insert into inventory values ('equipped', 'Alacor', 'On Person');
+SQL> insert into inventory values ('backpack', 'Andriel', 'On Person');
+SQL> insert into inventory values ('equipped', 'Andriel', 'On Person');
+SQL> --
+SQL> --
+SQL> insert into property values ('house1', '123 Straight St, Herrod', 5);
+SQL> insert into property values ('house2', 'Ft Zombiehead, Apt 3, Dead Isle', 3);
+SQL> insert into property values ('ship', 'SS Victory', 4);
+SQL> insert into property values ('castle_north', 'Vaterland Capitol', 25);
+SQL> --
+SQL> --
+SQL> insert into weapon values (01, 'Longsword, Blessed', '1d8+1', '1-handed', 4.0, 'Johannes', 'belt');
+SQL> insert into weapon values (02, 'Dagger', '1d4', 'light', 1.0, 'Johannes', 'belt');
+SQL> insert into weapon values (03, 'Lance +1', '1d8+1', '2-handed', 10.0, 'Johannes', 'saddle bags');
+SQL> insert into weapon values (04, 'Lance', '1d8', '2-handed', 10.0, 'Lerdeth', 'saddle bags');
+SQL> insert into weapon values (05, 'Greatsword', '2d6', '2-handed', 8.0, 'Lerdeth', 'belt');
+SQL> insert into weapon values (06, 'Dagger', '1d4', 'light', 1.0, 'Lerdeth', 'belt');
+SQL> insert into weapon values (07, 'Javelin', '1d6', 'light', 2.0, 'Lerdeth', 'backpack');
+SQL> insert into weapon values (08, 'Mace, Hvy', '1d8', '1-handed', 8.0, 'Andriel', 'equipped');
+SQL> insert into weapon values (09, 'Club', '1d6', '1-handed', 3.0, 'Lerdeth', 'belt');
+SQL> --
+SQL> --
+SQL> insert into armor values (11, 'Full Plate +3', 11, 'heavy', 5, 50.0, 'Johannes', 'equipped');
+SQL> insert into armor values (12, 'Full Plate', 8, 'heavy', 6, 50.0, 'Lerdeth', 'backpack');
+SQL> insert into armor values (13, 'Robe of the Arch Magi', 2, 'light', 0, 5.5, 'Alacor', 'backpack');
+SQL> insert into armor values (14, 'Leather', 2, 'light', 0, 15.0, 'Johannes', 'chest');
+SQL> insert into armor values (15, 'Brass Chain Shirt', 5, 'light', 1, 25.0, 'Johannes', 'backpack');
+SQL> --
+SQL> --
+SQL> insert into spell values (21, 'Cure Light Wounds', 1, 'Andriel', 'backpack');
+SQL> insert into spell values (22, 'Cure Moderate Wounds', 3, 'Andriel', 'backpack');
+SQL> insert into spell values (23, 'Cure Serious Wounds', 5, 'Andriel', 'backpack');
+SQL> insert into spell values (24, 'Cure Critical Wounds', 7, 'Andriel', 'backpack');
+SQL> insert into spell values (25, 'Evards Black Tentacles', 8, 'Alacor', 'backpack');
+SQL> --
+SQL> --
+SQL> insert into potion values (31, 'Cure Potion', 21, 'Andriel', 'backpack');
+SQL> insert into potion values (32, 'Cure Potion', 22, 'Andriel', 'backpack');
+SQL> insert into potion values (33, 'Cure Potion', 23, 'Andriel', 'backpack');
+SQL> insert into potion values (34, 'Cure Potion', 24, 'Andriel', 'backpack');
+SQL> insert into potion values (35, 'Scroll of Tentacles', 25, 'Alacor', 'backpack');
+SQL> --
+SQL> --
+SQL> insert into damagetype values (01, 'slashing');
+SQL> insert into damagetype values (01, 'piercing');
+SQL> insert into damagetype values (02, 'slashing');
+SQL> insert into damagetype values (02, 'piercing');
+SQL> insert into damagetype values (05, 'slashing');
+SQL> insert into damagetype values (05, 'piercing');
+SQL> insert into damagetype values (06, 'slashing');
+SQL> insert into damagetype values (06, 'piercing');
+SQL> insert into damagetype values (03, 'piercing');
+SQL> insert into damagetype values (04, 'piercing');
+SQL> insert into damagetype values (07, 'piercing');
+SQL> insert into damagetype values (08, 'bludgeoning');
+SQL> insert into damagetype values (09, 'bludgeoning');
+SQL> --
+SQL> --
+SQL> insert into playerproperty values ('house1', 'Andriel', '1184-05-12');
+SQL> insert into playerproperty values ('house1', 'Johannes', '1185-08-22');
+SQL> insert into playerproperty values ('house2', 'Johannes', '1186-08-13');
+SQL> insert into playerproperty values ('ship', 'Johannes', '1185-08-22');
+SQL> insert into playerproperty values ('castle_north', 'Johannes', '1180-01-01');
+SQL> --
+SQL> --
+SQL> -- ----------------------------------------------------------
+SQL> -- Queries
+SQL> -- ----------------------------------------------------------
+SQL> SET FEEDBACK ON
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> -- Print Player Table
+SQL> SELECT * FROM player;
+
+PLAYERNAME              GP  MAXWEIGHT CLASS                                     
+--------------- ---------- ---------- --------------------                      
+Johannes             18000        175 Paladin                                   
+Lerdeth               7000        260 Barbarian                                 
+Alacor                 150        100 Wizard                                    
+Andriel                750        130 Cleric                                    
+
+4 rows selected.
+
+SQL> -- Print Inventory Table
+SQL> SELECT * FROM inventory;
+
+INVENTORYNAME   IPLAYER         LOCATION                                        
+--------------- --------------- --------------------                            
+chest           Johannes        Ship: SS Victory                                
+saddle bags     Johannes        Horse: Fury                                     
+vault           Johannes        Bank of Herrod                                  
+backpack        Johannes        On Person                                       
+belt            Johannes        On Person                                       
+equipped        Johannes        On Person                                       
+backpack        Lerdeth         On Person                                       
+belt            Lerdeth         On Person                                       
+saddle bags     Lerdeth         Horse: brown                                    
+backpack        Alacor          On Person                                       
+equipped        Alacor          On Person                                       
+
+INVENTORYNAME   IPLAYER         LOCATION                                        
+--------------- --------------- --------------------                            
+backpack        Andriel         On Person                                       
+equipped        Andriel         On Person                                       
+
+13 rows selected.
+
+SQL> -- Print Property Table
+SQL> SELECT * FROM property;
+
+PROPERTYNAME    ADDRESS                                NUMROOM                  
+--------------- ----------------------------------- ----------                  
+house1          123 Straight St, Herrod                      5                  
+house2          Ft Zombiehead, Apt 3, Dead Isle              3                  
+ship            SS Victory                                   4                  
+castle_north    Vaterland Capitol                           25                  
+
+4 rows selected.
+
+SQL> -- Print Weapon Table
+SQL> SELECT * FROM weapon;
+
+       WID WNAME                DAMAGE     WTYPE              WWEIGHT           
+---------- -------------------- ---------- --------------- ----------           
+PLAYERNAME      INVENTORYNAME                                                   
+--------------- ---------------                                                 
+         1 Longsword, Blessed   1d8+1      1-handed                 4           
+Johannes        belt                                                            
+                                                                                
+         2 Dagger               1d4        light                    1           
+Johannes        belt                                                            
+                                                                                
+         3 Lance +1             1d8+1      2-handed                10           
+Johannes        saddle bags                                                     
+                                                                                
+
+       WID WNAME                DAMAGE     WTYPE              WWEIGHT           
+---------- -------------------- ---------- --------------- ----------           
+PLAYERNAME      INVENTORYNAME                                                   
+--------------- ---------------                                                 
+         4 Lance                1d8        2-handed                10           
+Lerdeth         saddle bags                                                     
+                                                                                
+         5 Greatsword           2d6        2-handed                 8           
+Lerdeth         belt                                                            
+                                                                                
+         6 Dagger               1d4        light                    1           
+Lerdeth         belt                                                            
+                                                                                
+
+       WID WNAME                DAMAGE     WTYPE              WWEIGHT           
+---------- -------------------- ---------- --------------- ----------           
+PLAYERNAME      INVENTORYNAME                                                   
+--------------- ---------------                                                 
+         7 Javelin              1d6        light                    2           
+Lerdeth         backpack                                                        
+                                                                                
+         8 Mace, Hvy            1d8        1-handed                 8           
+Andriel         equipped                                                        
+                                                                                
+         9 Club                 1d6        1-handed                 3           
+Lerdeth         belt                                                            
+                                                                                
+
+9 rows selected.
+
+SQL> -- Print Armor Table
+SQL> SELECT * FROM armor;
+
+       AID ARMORNAME                         AC ATYPE               ACHECK      
+---------- ------------------------- ---------- --------------- ----------      
+   AWEIGHT PLAYERNAME      INVENTORYNAME                                        
+---------- --------------- ---------------                                      
+        11 Full Plate +3                     11 heavy                    5      
+        50 Johannes        equipped                                             
+                                                                                
+        12 Full Plate                         8 heavy                    6      
+        50 Lerdeth         backpack                                             
+                                                                                
+        13 Robe of the Arch Magi              2 light                    0      
+       5.5 Alacor          backpack                                             
+                                                                                
+
+       AID ARMORNAME                         AC ATYPE               ACHECK      
+---------- ------------------------- ---------- --------------- ----------      
+   AWEIGHT PLAYERNAME      INVENTORYNAME                                        
+---------- --------------- ---------------                                      
+        14 Leather                            2 light                    0      
+        15 Johannes        chest                                                
+                                                                                
+        15 Brass Chain Shirt                  5 light                    1      
+        25 Johannes        backpack                                             
+                                                                                
+
+5 rows selected.
+
+SQL> -- Print Spell Table
+SQL> SELECT * FROM spell;
+
+       SID SPELLNAME                 CASTERLEVEL PLAYERNAME      INVENTORYNAME  
+---------- ------------------------- ----------- --------------- ---------------
+        21 Cure Light Wounds                   1 Andriel         backpack       
+        22 Cure Moderate Wounds                3 Andriel         backpack       
+        23 Cure Serious Wounds                 5 Andriel         backpack       
+        24 Cure Critical Wounds                7 Andriel         backpack       
+        25 Evards Black Tentacles              8 Alacor          backpack       
+
+5 rows selected.
+
+SQL> -- Print Potion Table
+SQL> SELECT * FROM potion;
+
+       PID POTIONNAME                       SID PLAYERNAME      INVENTORYNAME   
+---------- ------------------------- ---------- --------------- --------------- 
+        31 Cure Potion                       21 Andriel         backpack        
+        32 Cure Potion                       22 Andriel         backpack        
+        33 Cure Potion                       23 Andriel         backpack        
+        34 Cure Potion                       24 Andriel         backpack        
+        35 Scroll of Tentacles               25 Alacor          backpack        
+
+5 rows selected.
+
+SQL> -- Print damage type Table
+SQL> SELECT * FROM damagetype;
+
+       WID DAMAGETYPE                                                           
+---------- ---------------                                                      
+         1 piercing                                                             
+         1 slashing                                                             
+         2 piercing                                                             
+         2 slashing                                                             
+         3 piercing                                                             
+         4 piercing                                                             
+         5 piercing                                                             
+         5 slashing                                                             
+         6 piercing                                                             
+         6 slashing                                                             
+         7 piercing                                                             
+
+       WID DAMAGETYPE                                                           
+---------- ---------------                                                      
+         8 bludgeoning                                                          
+         9 bludgeoning                                                          
+
+13 rows selected.
+
+SQL> -- Print player property table.
+SQL> SELECT * FROM playerproperty;
+
+PROPERTYNAME    PLAYERNAME      DATEBOUGHT                                      
+--------------- --------------- ----------                                      
+house1          Andriel         1184-05-12                                      
+house1          Johannes        1185-08-22                                      
+house2          Johannes        1186-08-13                                      
+ship            Johannes        1185-08-22                                      
+castle_north    Johannes        1180-01-01                                      
+
+5 rows selected.
+
+SQL> --
+SQL> -- < START OF QUERIES >
+SQL> -- < Q01 - A join involving at least four relations. >
+SQL> -- Find the player name and the player class having an inventory that contains a weapon that has damage type 'bludgeoning'.
+SQL> SELECT  P.playerName, P.class, I.inventoryName, W.wName
+  2  FROM    player P, Inventory I, damagetype D, weapon W
+  3  WHERE   p.playerName = I.iPlayer AND
+  4  	     I.iPlayer = W.playerName AND
+  5  	     I.inventoryName = W.inventoryName AND
+  6  	     W.wid = D.wid AND
+  7  	     D.damageType = 'bludgeoning';
+
+PLAYERNAME      CLASS                INVENTORYNAME   WNAME                      
+--------------- -------------------- --------------- --------------------       
+Andriel         Cleric               equipped        Mace, Hvy                  
+Lerdeth         Barbarian            belt            Club                       
+
+2 rows selected.
+
+SQL> -- < Q02 - A self-join >
+SQL> -- Find the pair of players having at least one of the same inventory.
+SQL> SELECT  I1.iPlayer, I2.iPlayer, I1.inventoryName
+  2  FROM    inventory I1, inventory I2
+  3  WHERE   I1.inventoryName = I2.inventoryName AND
+  4  	     I1.iPlayer < I2.iPlayer;
+
+IPLAYER         IPLAYER         INVENTORYNAME                                   
+--------------- --------------- ---------------                                 
+Alacor          Andriel         backpack                                        
+Andriel         Johannes        backpack                                        
+Alacor          Johannes        backpack                                        
+Johannes        Lerdeth         backpack                                        
+Andriel         Lerdeth         backpack                                        
+Alacor          Lerdeth         backpack                                        
+Johannes        Lerdeth         belt                                            
+Alacor          Andriel         equipped                                        
+Andriel         Johannes        equipped                                        
+Alacor          Johannes        equipped                                        
+Johannes        Lerdeth         saddle bags                                     
+
+11 rows selected.
+
+SQL> -- < Q03 - UNION, INTERSECT, and/or MINUS. >
+SQL> -- Find the sid and spell name of every spell whose casterLevel is above 3
+SQL> -- and contain a type of potion.
+SQL> SELECT  S.sid, S.spellName
+  2  FROM    spell S
+  3  WHERE   s.casterLevel > 3
+  4  INTERSECT
+  5  SELECT  S.sid, S.spellName
+  6  FROM    spell S, potion P
+  7  WHERE   S.sid = P.sid;
+
+       SID SPELLNAME                                                            
+---------- -------------------------                                            
+        23 Cure Serious Wounds                                                  
+        24 Cure Critical Wounds                                                 
+        25 Evards Black Tentacles                                               
+
+3 rows selected.
+
+SQL> -- < Q04 - SUM, AVG, MAX, and/or MIN. >
+SQL> -- Find the total weight of weapons in each inventory.
+SQL> SELECT  I.iPlayer, I.inventoryName, SUM(W.wWeight)
+  2  FROM    weapon W, inventory I
+  3  WHERE   I.iPlayer = W.playerName AND
+  4  	     I.inventoryName = W.inventoryName
+  5  GROUP BY I.iPlayer, I.inventoryName;
+
+IPLAYER         INVENTORYNAME   SUM(W.WWEIGHT)                                  
+--------------- --------------- --------------                                  
+Lerdeth         saddle bags                 10                                  
+Lerdeth         backpack                     2                                  
+Andriel         equipped                     8                                  
+Lerdeth         belt                        12                                  
+Johannes        belt                         5                                  
+Johannes        saddle bags                 10                                  
+
+6 rows selected.
+
+SQL> -- < Q05 - GROUP BY, HAVING, and ORDER BY, all appearing in the same query. >
+SQL> -- Find all player inventories that have more than 1 weapon in the inventory,
+SQL> -- also find the total weight of weapons the inventory is holding and sort it by total weight.
+SQL> SELECT  I.iPlayer, I.inventoryName, SUM(W.wWeight), COUNT(*)
+  2  FROM    weapon W, inventory I
+  3  WHERE   I.iPlayer = W.playerName AND
+  4  	     I.inventoryName = W.inventoryName
+  5  GROUP BY I.iPlayer, I.inventoryName
+  6  HAVING  COUNT(*) > 1
+  7  ORDER BY SUM(W.wWeight);
+
+IPLAYER         INVENTORYNAME   SUM(W.WWEIGHT)   COUNT(*)                       
+--------------- --------------- -------------- ----------                       
+Johannes        belt                         5          2                       
+Lerdeth         belt                        12          3                       
+
+2 rows selected.
+
+SQL> -- < Q06 - A correlated subquery. >
+SQL> -- -- Find the name of every weapon with the damage type 'slashing'
+SQL> SELECT W.wName
+  2  FROM weapon W
+  3  WHERE EXISTS
+  4  	     (SELECT D.wid
+  5  	      FROM damagetype D
+  6  	      WHERE D.wid = W.wid AND
+  7  		  D.damageType = 'slashing');
+
+WNAME                                                                           
+--------------------                                                            
+Longsword, Blessed                                                              
+Dagger                                                                          
+Greatsword                                                                      
+Dagger                                                                          
+
+4 rows selected.
+
+SQL> -- < Q07 - A non-correlated subquery. >
+SQL> -- Find the name of every weapon that has a damage type of piercing
+SQL> SELECT W.wName
+  2  FROM weapon W
+  3  WHERE W.wid In
+  4  	     (SELECT D.wid
+  5  	      FROM damagetype D
+  6  	      WHERE D.damageType = 'piercing');
+
+WNAME                                                                           
+--------------------                                                            
+Longsword, Blessed                                                              
+Dagger                                                                          
+Lance +1                                                                        
+Lance                                                                           
+Greatsword                                                                      
+Dagger                                                                          
+Javelin                                                                         
+
+7 rows selected.
+
+SQL> -- < Q08a - A relational DIVISION query. >
+SQL> -- Find the name of every player who has an inventory in location: on person and is not a cleric
+SQL> SELECT P.playerName
+  2  FROM player P
+  3  WHERE EXISTS ((SELECT I2.iPlayer
+  4  		        FROM inventory I2
+  5  		        WHERE I2.location = 'On Person' AND
+  6  		        P.playerName = I2.iPlayer)
+  7  		      MINUS
+  8  		       (SELECT I.iplayer
+  9  		        FROM  inventory I
+ 10  		        WHERE P.class = 'Cleric' AND
+ 11  			          I.location = 'On Person' AND
+ 12  			          P.playerName = I.iPlayer));
+
+PLAYERNAME                                                                      
+---------------                                                                 
+Johannes                                                                        
+Lerdeth                                                                         
+Alacor                                                                          
+
+3 rows selected.
+
+SQL> -- < Q08b - A relational DIVISION query. >
+SQL> --Find any player who is an owner of all the player properties.
+SQL> SELECT P.playerName
+  2  FROM player P
+  3  WHERE NOT EXISTS ((SELECT PP.propertyName
+  4  			        FROM property PP)
+  5  		          MINUS
+  6  		           (SELECT PP2.propertyName
+  7  			        FROM playerproperty PP2
+  8  			        WHERE PP2.playerName = P.playerName));
+
+PLAYERNAME                                                                      
+---------------                                                                 
+Johannes                                                                        
+
+1 row selected.
+
+SQL> -- < Q09 - An outer join query. >
+SQL> -- Find the class and the name of every player's inventory
+SQL> SELECT P.class, I.inventoryName
+  2  FROM inventory I
+  3  LEFT OUTER JOIN player P
+  4  ON I.iPlayer = P.playerName;
+
+CLASS                INVENTORYNAME                                              
+-------------------- ---------------                                            
+Paladin              vault                                                      
+Paladin              saddle bags                                                
+Paladin              equipped                                                   
+Paladin              chest                                                      
+Paladin              belt                                                       
+Paladin              backpack                                                   
+Barbarian            saddle bags                                                
+Barbarian            belt                                                       
+Barbarian            backpack                                                   
+Wizard               equipped                                                   
+Wizard               backpack                                                   
+
+CLASS                INVENTORYNAME                                              
+-------------------- ---------------                                            
+Cleric               equipped                                                   
+Cleric               backpack                                                   
+
+13 rows selected.
+
+SQL> -- < Q10 - A RANK query >
+SQL> -- Finding the rank of weight 10.0 among all the weapons.
+SQL> SELECT RANK(10.0) WITHIN GROUP
+  2  (ORDER BY wWeight) "Weapon Weight RANK FOR 10.0"
+  3  FROM weapon;
+
+Weapon Weight RANK FOR 10.0                                                     
+---------------------------                                                     
+                          8                                                     
+
+1 row selected.
+
+SQL> -- < Q11 - A Top-N query. >
+SQL> -- Finding the top three casterlevel of spell in the inventory.
+SQL> SELECT  sid, spellName, casterLevel
+  2  FROM    spell
+  3  ORDER BY casterLevel DESC
+  4  FETCH FIRST 3 ROWS ONLY;
+
+       SID SPELLNAME                 CASTERLEVEL                                
+---------- ------------------------- -----------                                
+        25 Evards Black Tentacles              8                                
+        24 Cure Critical Wounds                7                                
+        23 Cure Serious Wounds                 5                                
+
+3 rows selected.
+
+SQL> --
+SQL> -- Testing: <IC name>
+SQL> --
+SQL> --playerIC1
+SQL> insert into player values ('Johannes', 24, 125.0, 'Bard');
+insert into player values ('Johannes', 24, 125.0, 'Bard')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (KRUEGECO.PLAYERIC1) violated 
+
+
+SQL> --poIC2
+SQL> insert into potion values (36, 'Strength Potion', 26, 'Andriel', 'backpack');
+insert into potion values (36, 'Strength Potion', 26, 'Andriel', 'backpack')
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (KRUEGECO.POIC2) violated - parent key not 
+found 
+
+
+SQL> --pIC2
+SQL> insert into property values ('well', 'Good Luck', 0);
+insert into property values ('well', 'Good Luck', 0)
+*
+ERROR at line 1:
+ORA-02290: check constraint (KRUEGECO.PIC2) violated 
+
+
+SQL> --aIC5
+SQL> insert into armor values (16, 'Splintmail of Swimming', 6, 'heavy', 1, 45.0, 'Lerdeth', 'backpack');
+insert into armor values (16, 'Splintmail of Swimming', 6, 'heavy', 1, 45.0, 'Lerdeth', 'backpack')
+*
+ERROR at line 1:
+ORA-02290: check constraint (KRUEGECO.AIC5) violated 
+
+
+SQL> --
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> --
+SQL> SPOOL OFF
