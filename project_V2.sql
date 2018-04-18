@@ -18,7 +18,7 @@ DROP TABLE playerproperty CASCADE CONSTRAINTS;
 -- ----------------------------------------------------------------
 CREATE TABLE player(
 playerName	CHAR(15),
-qp		INTEGER 	NOT NULL,
+gp		INTEGER 	NOT NULL,
 maxWeight	FLOAT		NOT NULL,
 class		CHAR(20)	NOT NULL,
 --
@@ -27,8 +27,8 @@ class		CHAR(20)	NOT NULL,
 CONSTRAINT playerIC1 PRIMARY KEY (playerName),
 -- playerIC2:
 -- A player must be able to hold some amount of weight.
--- and qp(QuestPoint) cannot be negative, you either have 0, or more.
-CONSTRAINT playerIC2 CHECK (maxWeight > 0 AND qp >= 0),
+-- and gp(gold pieces) cannot be negative, you either have 0, or more.
+CONSTRAINT playerIC2 CHECK (maxWeight > 0 AND gp >= 0),
 -- playerIC3:
 -- Player can only be one of following classes.
 CONSTRAINT playerIC3 CHECK (class in ('Barbarian', 'Bard', 'Cleric', 
@@ -40,7 +40,7 @@ CONSTRAINT playerIC3 CHECK (class in ('Barbarian', 'Bard', 'Cleric',
 CREATE TABLE inventory(
 inventoryName	CHAR(15),
 iPlayer		CHAR(15)	NOT NULL,
-location	CHAR(50)	NOT NULL,
+location	CHAR(20)	NOT NULL,
 --
 -- iIC1:
 -- inventoryName is the primary key.
@@ -49,7 +49,7 @@ CONSTRAINT iIC1 PRIMARY KEY(inventoryName, iPlayer)
 -- ----------------------------------------------------------------
 CREATE TABLE property(
 propertyName	CHAR(15),
-address		CHAR(50)	NOT NULL,
+address		CHAR(35)	NOT NULL,
 numRoom		INTEGER		NOT NULL,
 --
 -- pIC1:
@@ -74,7 +74,7 @@ inventoryName	CHAR(15)	NOT NULL,
 CONSTRAINT wIC1 PRIMARY KEY (wid),
 -- wIC2:
 -- A weapon must be classified as light, 1-handed, or 2-handed.
-CONSTRAINT wIC2 CHECK (wType in ('light', '1-handed', '2-handed'),
+CONSTRAINT wIC2 CHECK (wType in ('light', '1-handed', '2-handed')),
 -- wIC3:
 -- A weapon must have a weight greater than 0.
 CONSTRAINT wIC3 CHECK (wWeight > 0.0),
@@ -180,7 +180,7 @@ SET FEEDBACK OFF
 --
 alter session set  NLS_DATE_FORMAT = 'YYYY-MM-DD';
 --
---gp and qp issue - 1 row 2 constraint issue
+--
 insert into player values ('Johannes', 18000, 175.0, 'Paladin');
 insert into player values ('Lerdeth', 7000, 260.0, 'Barbarian');
 insert into player values ('Alacor', 150, 100.0, 'Wizard');
@@ -215,8 +215,8 @@ insert into weapon values (04, 'Lance', '1d8', '2-handed', 10.0, 'Lerdeth', 'sad
 insert into weapon values (05, 'Greatsword', '2d6', '2-handed', 8.0, 'Lerdeth', 'belt');
 insert into weapon values (06, 'Dagger', '1d4', 'light', 1.0, 'Lerdeth', 'belt');
 insert into weapon values (07, 'Javelin', '1d6', 'light', 2.0, 'Lerdeth', 'backpack');
-insert into weapon values (08, 'Mace, Hvy', '1d8', '1-handed', 2.0, 'Andriel', 'equipped');
-insert into weapon values (09, 'Club', '1d6', '1-handed', 2.0, 'Lerdeth', 'belt');
+insert into weapon values (08, 'Mace, Hvy', '1d8', '1-handed', 8.0, 'Andriel', 'equipped');
+insert into weapon values (09, 'Club', '1d6', '1-handed', 3.0, 'Lerdeth', 'belt');
 --
 --
 insert into armor values (11, 'Full Plate +3', 11, 'heavy', 5, 50.0, 'Johannes', 'equipped');
@@ -256,7 +256,8 @@ insert into damagetype values (09, 'bludgeoning');
 --
 --
 insert into playerproperty values ('house1', 'Andriel', '1184-05-12');
-insert into playerproperty values ('house2', 'Johannes', '1185-08-22');
+insert into playerproperty values ('house1', 'Johannes', '1185-08-22');
+insert into playerproperty values ('house2', 'Johannes', '1186-08-13');
 insert into playerproperty values ('ship', 'Johannes', '1185-08-22');
 insert into playerproperty values ('castle_north', 'Johannes', '1180-01-01');
 --
@@ -335,16 +336,16 @@ FROM weapon W
 WHERE EXISTS
 	(SELECT D.wid
 	 FROM damagetype D
-	 WHERE D.wid = W.wid AND
-	       D.damageType = 'slashing');
+     WHERE D.wid = W.wid AND
+           D.damageType = 'slashing');
 -- < Q07 - A non-correlated subquery. >
--- Find the name of every weapon that has a damage type
+-- Find the name of every weapon that has a damage type of piercing
 SELECT W.wName
 FROM weapon W
-WHERE EXISTS
+WHERE W.wid In
 	(SELECT D.wid
-	 FROM damagetype D, weapon W
-	 WHERE D.wid = W.wid);
+	 FROM damagetype D
+     WHERE D.damageType = 'piercing');
 -- < Q08 - A relational DIVISION query. >
 -- Find the name of every player who has an inventory in location: on person and is not a cleric
 SELECT P.playerName
