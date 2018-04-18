@@ -346,7 +346,7 @@ WHERE W.wid In
 	(SELECT D.wid
 	 FROM damagetype D
      WHERE D.damageType = 'piercing');
--- < Q08 - A relational DIVISION query. >
+-- < Q08a - A relational DIVISION query. >
 -- Find the name of every player who has an inventory in location: on person and is not a cleric
 SELECT P.playerName
 FROM player P
@@ -360,6 +360,16 @@ WHERE EXISTS ((SELECT I2.iPlayer
                WHERE P.class = 'Cleric' AND
                      I.location = 'On Person' AND 
                      P.playerName = I.iPlayer));
+-- < Q08b - A relational DIVISION query. >
+--Find any player who is an owner of all the player properties.
+SELECT P.playerName
+FROM player P
+WHERE NOT EXISTS ((SELECT PP.propertyName
+                   FROM property PP)
+                 MINUS
+                  (SELECT PP2.propertyName
+                   FROM playerproperty PP2
+                   WHERE PP2.playerName = P.playerName));
 -- < Q09 - An outer join query. >
 -- Find the class and the name of every player's inventory
 SELECT P.class, I.inventoryName
