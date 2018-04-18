@@ -73,8 +73,8 @@ inventoryName	CHAR(15)	NOT NULL,
 -- wid is the primary key.
 CONSTRAINT wIC1 PRIMARY KEY (wid),
 -- wIC2:
--- A weapon can have no damage, but the damage must not be negative.
---CONSTRAINT wIC2 CHECK (damage >= 0),
+-- A weapon must be classified as light, 1-handed, or 2-handed.
+CONSTRAINT wIC2 CHECK (wType in ('light', '1-handed', '2-handed'),
 -- wIC3:
 -- A weapon must have a weight greater than 0.
 CONSTRAINT wIC3 CHECK (wWeight > 0.0),
@@ -172,12 +172,6 @@ CONSTRAINT ppIC3 FOREIGN KEY (playerName) REFERENCES player(playerName)
 );
 --
 --
---
---ADD THE INSERT DATA BELOW
---
---
---
---
 -- ----------------------------------------------------------
 -- Populate the database
 -- ----------------------------------------------------------
@@ -213,9 +207,7 @@ insert into property values ('house2', 'Ft Zombiehead, Apt 3, Dead Isle', 3);
 insert into property values ('ship', 'SS Victory', 4);
 insert into property values ('castle_north', 'Vaterland Capitol', 25);
 --
---here is where we could had 2 constraint, name contains 'sword', damage must contain slashing
---damage is said to be greater than 0, but that is not possible with string
---remember float for weight
+--
 insert into weapon values (01, 'Longsword, Blessed', '1d8+1', '1-handed', 4.0, 'Johannes', 'belt');
 insert into weapon values (02, 'Dagger', '1d4', 'light', 1.0, 'Johannes', 'belt');
 insert into weapon values (03, 'Lance +1', '1d8+1', '2-handed', 10.0, 'Johannes', 'saddle bags');
@@ -269,13 +261,6 @@ insert into playerproperty values ('ship', 'Johannes', '1185-08-22');
 insert into playerproperty values ('castle_north', 'Johannes', '1180-01-01');
 --
 --
---insert into weapon values ( , '', '', '', , '', '');
---
---
---
--- ----------------------------------------------------------
---
---
 -- ----------------------------------------------------------
 -- Queries
 -- ----------------------------------------------------------
@@ -317,8 +302,8 @@ FROM 	inventory I1, inventory I2
 WHERE	I1.inventoryName = I2.inventoryName AND
 	I1.iPlayer < I2.iPlayer;
 -- < Q03 - UNION, INTERSECT, and/or MINUS. > 
--- Find the sid and spell name of every spell whose casterLevel is above 2
--- or contain a type of potion.
+-- Find the sid and spell name of every spell whose casterLevel is above 3
+-- and contain a type of potion.
 SELECT	S.sid, S.spellName
 FROM 	spell S
 WHERE 	s.casterLevel > 3
@@ -351,7 +336,7 @@ WHERE EXISTS
 	(SELECT D.wid
 	 FROM damagetype D
 	 WHERE D.wid = W.wid AND
-		   D.damageType = 'slashing');
+	       D.damageType = 'slashing');
 -- < Q07 - A non-correlated subquery. >
 -- Find the name of every weapon that has a damage type
 SELECT W.wName
@@ -365,15 +350,15 @@ WHERE EXISTS
 SELECT P.playerName
 FROM player P
 WHERE EXISTS ((SELECT I2.iPlayer
-                   FROM inventory I2
-                   WHERE I2.location = 'On Person' AND
-                     P.playerName = I2.iPlayer)
-                   MINUS
-                   (SELECT I.iplayer
-                     FROM  inventory I
-                     WHERE P.class = 'Cleric' AND
-                           I.location = 'On Person' AND 
-                           P.playerName = I.iPlayer));
+               FROM inventory I2
+               WHERE I2.location = 'On Person' AND
+               P.playerName = I2.iPlayer)
+             MINUS
+              (SELECT I.iplayer
+               FROM  inventory I
+               WHERE P.class = 'Cleric' AND
+                     I.location = 'On Person' AND 
+                     P.playerName = I.iPlayer));
 -- < Q09 - An outer join query. >
 -- Find the class and the name of every player's inventory
 SELECT P.class, I.inventoryName
